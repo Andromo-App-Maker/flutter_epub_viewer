@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!--
+      FolioReader themes (FolioActivityDayTheme / FolioActivityNightTheme) predate edge-to-edge.
+      Parent styles come from the folioreader AAR. We add window flags + Android 15 opt-out so
+      Folio activities do not draw under the status bar when the host app targets API 35.
+    -->
+    <style name="FolioReaderWindowFixDayTheme" parent="@style/FolioActivityDayTheme">
+        <item name="android:windowFullscreen">false</item>
+        <item name="android:windowDrawsSystemBarBackgrounds">true</item>
+        <item name="android:windowTranslucentStatus">false</item>
+        <item name="android:windowTranslucentNavigation">false</item>
+        <!-- API 35: opt out of mandatory edge-to-edge for this activity (temporary escape hatch). -->
+        <item name="android:windowOptOutEdgeToEdgeEnforcement">true</item>
+    </style>
+
+    <style name="FolioReaderWindowFixNightTheme" parent="@style/FolioActivityNightTheme">
+        <item name="android:windowFullscreen">false</item>
+        <item name="android:windowDrawsSystemBarBackgrounds">true</item>
+        <item name="android:windowTranslucentStatus">false</item>
+        <item name="android:windowTranslucentNavigation">false</item>
+        <item name="android:windowOptOutEdgeToEdgeEnforcement">true</item>
+    </style>
+</resources>

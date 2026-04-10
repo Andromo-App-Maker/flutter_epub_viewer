@@ -1,4 +1,27 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
-  package="com.vocsy.epub_viewer">
+    xmlns:tools="http://schemas.android.com/tools"
+    package="com.vocsy.epub_viewer">
 
+    <!--
+      Replace FolioReader activity themes so reader/search/highlight screens opt out of host
+      edge-to-edge (see FolioReaderWindowFix*Theme and windowOptOutEdgeToEdgeEnforcement).
+    -->
+    <application>
+        <!-- Theme only: edge-to-edge opt-out. Do not force enableOnBackInvokedCallback here; the
+             merged value must match what FolioReader + the host expect or back / toolbar can no-op. -->
+        <activity
+            android:name="com.folioreader.ui.activity.FolioActivity"
+            android:theme="@style/FolioReaderWindowFixDayTheme"
+            tools:replace="android:theme" />
+
+        <activity
+            android:name="com.folioreader.ui.activity.SearchActivity"
+            android:theme="@style/FolioReaderWindowFixDayTheme"
+            tools:replace="android:theme" />
+
+        <activity
+            android:name="com.folioreader.ui.activity.ContentHighlightActivity"
+            android:theme="@style/FolioReaderWindowFixDayTheme"
+            tools:replace="android:theme" />
+    </application>
 </manifest>
