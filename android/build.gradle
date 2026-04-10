@@ -15,6 +15,11 @@ buildscript {
 rootProject.allprojects {
     repositories {
         google()
+        mavenCentral()
+        mavenLocal()
+        // Mirrors some com.github.* JitPack artifacts (e.g. nanohttpd-nanolets fd80618e93d) without JitPack-only resolution.
+        // https://repository.liferay.com/nexus/content/repositories/public/com/github/NanoHttpd/nanohttpd/nanohttpd-nanolets/fd80618e93d/
+        maven { url "https://repository.liferay.com/nexus/content/repositories/public/" }
         jcenter()
         maven { url "https://jitpack.io" }
     }
@@ -22,9 +27,10 @@ rootProject.allprojects {
 
 apply plugin: 'com.android.library'
 
+
 android {
     namespace 'com.vocsy.epub_viewer'
-    compileSdkVersion 33
+    compileSdkVersion 35
 
     defaultConfig {
         minSdkVersion 21
