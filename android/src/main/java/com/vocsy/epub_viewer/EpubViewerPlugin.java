@@ -35,35 +35,49 @@ public class EpubViewerPlugin implements MethodCallHandler, FlutterPlugin, Activ
     static private EventChannel.EventSink sink;
     private static final String channelName = "vocsy_epub_viewer";
 
+    /**
+     * Single handler for the "page" channel. A second {@link EventChannel} on the same
+     * name replaces the active stream, and the next cancel fails with
+     * "No active stream to cancel".
+     */
+    private static final EventChannel.StreamHandler pageStreamHandler = new EventChannel.StreamHandler() {
+        @Override
+        public void onListen(Object arguments, EventChannel.EventSink eventSink) {
+            sink = eventSink;
+        }
+
+        @Override
+        public void onCancel(Object arguments) {
+            sink = null;
+        }
+    };
+
     // Removed legacy v1 embedding Registrar-based registration.
 
     @Override
     public void onAttachedToEngine(@NonNull FlutterPluginBinding binding) {
         messenger = binding.getBinaryMessenger();
         context = binding.getApplicationContext();
-        new EventChannel(messenger, "page").setStreamHandler(new EventChannel.StreamHandler() {
-
-            @Override
-            public void onListen(Object o, EventChannel.EventSink eventSink) {
-
-                sink = eventSink;
-                if (sink == null) {
-                    Log.i("empty", "Sink is empty");
-                }
-            }
-
-            @Override
-            public void onCancel(Object o) {
-
-            }
-        });
+        if (eventChannel != null) {
+            eventChannel.setStreamHandler(null);
+        }
+        eventChannel = new EventChannel(messenger, "page");
+        eventChannel.setStreamHandler(pageStreamHandler);
         channel = new MethodChannel(messenger, channelName);
         channel.setMethodCallHandler(this);
     }
 
     @Override
     public void onDetachedFromEngine(@NonNull FlutterPluginBinding binding) {
-        // TODO: your plugin is no longer attached to a Flutter experience.
+        sink = null;
+        if (eventChannel != null) {
+            eventChannel.setStreamHandler(null);
+            eventChannel = null;
+        }
+        if (channel != null) {
+            channel.setMethodCallHandler(null);
+            channel = null;
+        }
     }
 
     @Override
@@ -117,20 +131,9 @@ public class EpubViewerPlugin implements MethodCallHandler, FlutterPlugin, Activ
         } else if (call.method.equals("close")) {
             reader.close();
         } else if (call.method.equals("setChannel")) {
-            eventChannel = new EventChannel(messenger, "page");
-            eventChannel.setStreamHandler(new EventChannel.StreamHandler() {
-
-                @Override
-                public void onListen(Object o, EventChannel.EventSink eventSink) {
-
-                    sink = eventSink;
-                }
-
-                @Override
-                public void onCancel(Object o) {
-
-                }
-            });
+            // Registered once in onAttachedToEngine. Creating another EventChannel
+            // here drops the active listen, so cancel throws.
+            result.success(null);
         } else {
             result.notImplemented();
         }

@@ -18,7 +18,11 @@ public class SwiftEpubViewerPlugin: NSObject, FlutterPlugin,FolioReaderPageDeleg
         
       pageChannel = FlutterEventChannel.init(name: "page",
                                   binaryMessenger: registrar.messenger());
-      
+      // One handler for the lifetime of the engine. Setting it again on open
+      // drops the active listen, and the next cancel fails with
+      // "No active stream to cancel".
+      pageChannel?.setStreamHandler(instance)
+
       registrar.addMethodCallDelegate(instance, channel: channel)
     }
 
@@ -40,7 +44,6 @@ public class SwiftEpubViewerPlugin: NSObject, FlutterPlugin,FolioReaderPageDeleg
 
         break
       case "open":
-          setPageHandler()
           let arguments = call.arguments as![String:Any]
           let bookPath = arguments["bookPath"] as! String
           self.open(epubPath: bookPath)
@@ -49,23 +52,22 @@ public class SwiftEpubViewerPlugin: NSObject, FlutterPlugin,FolioReaderPageDeleg
       case "close":
           self.close()
           break
+      case "setChannel":
+          result(nil)
+          return
       default:
           break
       }
   //    result("iOS " + UIDevice.current.systemVersion)
     }
-      
-      private func setPageHandler(){
-          SwiftEpubViewerPlugin.pageChannel?.setStreamHandler(self)
 
-      }
-      
       public func onListen(withArguments arguments: Any?, eventSink events: @escaping FlutterEventSink) -> FlutterError? {
           SwiftEpubViewerPlugin.pageResult = events
           return nil
       }
 
       public func onCancel(withArguments arguments: Any?) -> FlutterError? {
+          SwiftEpubViewerPlugin.pageResult = nil
           return nil
       }
       
