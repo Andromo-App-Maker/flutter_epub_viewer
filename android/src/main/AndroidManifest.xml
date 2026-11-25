@@ -4,7 +4,8 @@
 
     <!--
       Replace FolioReader activity themes so reader/search/highlight screens opt out of host
-      edge-to-edge (see FolioReaderWindowFix*Theme and windowOptOutEdgeToEdgeEnforcement).
+      edge-to-edge on Android 15 (see FolioReaderWindowFix*Theme). API 36 ignores
+      windowOptOutEdgeToEdgeEnforcement; ContentHighlightActivity is inset by the layout override.
     -->
     <application>
         <!-- Theme only: edge-to-edge opt-out. Do not force enableOnBackInvokedCallback here; the

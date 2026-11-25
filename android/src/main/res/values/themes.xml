@@ -2,8 +2,9 @@
 <resources>
     <!--
       FolioReader themes (FolioActivityDayTheme / FolioActivityNightTheme) predate edge-to-edge.
-      Parent styles come from the folioreader AAR. We add window flags + Android 15 opt-out so
-      Folio activities do not draw under the status bar when the host app targets API 35.
+      Parent styles come from the folioreader AAR. windowOptOutEdgeToEdgeEnforcement still opts
+      out on Android 15. Android 16 (API 36) ignores it, so ContentHighlightActivity is inset
+      by res/layout/activity_content_highlight.xml instead of relying on this flag.
     -->
     <style name="FolioReaderWindowFixDayTheme" parent="@style/FolioActivityDayTheme">
         <item name="android:windowFullscreen">false</item>
